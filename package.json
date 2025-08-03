@@ -40,12 +40,15 @@
 		"@swc/core": "^1.13.3",
 		"@types/node": "^24.1.0",
 		"@typescript-eslint/parser": "^8.38.0",
+		"discord.js-selfbot-v13": "^3.7.0",
 		"husky": "^9.1.7",
 		"libnpmpack": "^9.0.6",
 		"tsup": "^8.5.0",
 		"typescript": "^5.8.3"
 	},
 	"dependencies": {
+		"@sapphire/timestamp": "^1.0.5",
+		"colorette": "^2.0.20",
 		"tslib": "^2.8.1"
 	}
 }

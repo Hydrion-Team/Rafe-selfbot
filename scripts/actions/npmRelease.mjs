@@ -86,7 +86,7 @@ async function publishNpmjs(pkg, branch, tarballPath) {
 async function main() {
 
    const pkg = getPackageJson();
-   const branch = pkg.version.includes('alpha') || pkg.version.includes('beta') ? 'next' : 'latest';
+   const branch = pkg.version.includes('alpha') || pkg.version.includes('beta') ? 'beta' : 'latest';
 
    console.log('🚀 Starting NPM Publish Process...');
    console.log(`🔗 Repository: ${owner}/${repo} (from git remote)`);

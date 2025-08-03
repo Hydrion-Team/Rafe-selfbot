@@ -27,8 +27,9 @@
 		"pretty": true,
 		"removeComments": false,
 		"skipLibCheck": true,
-		"composite": true,
+		"composite": false,
 		"sourceMap": false
 	},
-	"include": ["src"]
+	"include": ["src/**/*"],
+	"exclude": ["node_modules", "dist", "tests"]
 }
