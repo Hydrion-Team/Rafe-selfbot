@@ -52,7 +52,7 @@ async function buildProject() {
    return tempPath;
 }
 
-async function publishGitHubPackages(pkg, githubToken) {
+async function publishGitHubPackages(pkg, githubToken, tarballPath) {
    console.log('🚀 Starting GitHub Packages publish...');
 
    const versionExists = await checkVersionExists(GITHUB_REGISTRY, pkg.name, pkg.version, {
@@ -65,14 +65,13 @@ async function publishGitHubPackages(pkg, githubToken) {
    const currentSha = await getCurrentCommitSha();
    console.log(`📍 Current commit: ${currentSha.substring(0, 7)}`);
 
-   const tarballPath = await buildProject();
 
    console.log('🚚 Publishing to GitHub Packages Registry...');
    exec(`npm publish "${tarballPath}" --registry=${GITHUB_REGISTRY}`);
    console.log('✅ Published to GitHub Packages!');
 }
 
-async function publishNpmjs(pkg, branch) {
+async function publishNpmjs(pkg, branch, tarballPath) {
    console.log('🚚 Publishing to npmjs Registry...');
 
    console.log('🔎 Checking version on npmjs registry...');
@@ -80,11 +79,12 @@ async function publishNpmjs(pkg, branch) {
 
    if (versionExists) return;
 
-   exec(`npm publish --access public --tag ${branch}`);
+   exec(`npm publish "${tarballPath}" --access public --tag ${branch}`);
    console.log('✅ Published to npmjs Registry!');
 }
 
 async function main() {
+
    const pkg = getPackageJson();
    const branch = pkg.version.includes('alpha') || pkg.version.includes('beta') ? 'next' : 'latest';
 
@@ -96,21 +96,23 @@ async function main() {
    const githubToken = process.env.GITHUB_TOKEN;
    const npmToken = process.env.NPM_TOKEN;
    generateNpmRc(githubToken, npmToken);
+
+   const tarballPath = await buildProject();
    if (githubToken && githubActionsEnabled) {
       try {
-         await publishGitHubPackages(pkg, githubToken);
+         await publishGitHubPackages(pkg, githubToken, tarballPath);
       } catch (error) {
          console.error('❌ GitHub Packages publish failed:', error);
          errors.push('GitHub Packages');
       }
    } else {
-      console.error('❌ GITHUB_TOKEN is not set');
-      errors.push('GitHub Packages');
+      if (!githubActionsEnabled) console.error('❌ GITHUB_TOKEN is not set');
+      if (!githubActionsEnabled) errors.push('GitHub Packages');
    }
 
    if (npmToken) {
       try {
-         await publishNpmjs(pkg, branch);
+         await publishNpmjs(pkg, branch, tarballPath);
       } catch (error) {
          console.error('❌ npmjs publish failed:', error);
          errors.push('npmjs');
